@@ -9,19 +9,39 @@ export const navLinks = [
 
 export const advantages = [
   {
-    icon: "GraduationCap",
-    title: "Kuchli Ustozlar",
-    text: "Yuqori shaxsiy ballga ega bo'lgan tajribali ustozlar. Sizga eng zo'r natijalarga erishishda yordam beradigan mutaxassislar.",
+    icon: "Layers",
+    title: "Kuchli o'quv tizimi",
+    text: "Darslar eng so'nggi DTM va Milliy Sertifikat standartlari asosida, tizimli va mukammal ishlab chiqilgan.",
   },
   {
-    icon: "Sparkles",
-    title: "Zamonaviy Metodika",
-    text: "Intensiv, tizimli va natijaga yo'naltirilgan yondashuv. Har bir dars maqsadli va amaliy natija uchun mo'ljallangan.",
+    icon: "Users",
+    title: "Kuchli jamoa",
+    text: "O'z fanining yosh va tajribali mutaxassislari. Har bir o'qituvchi yuqori shaxsiy natijalarga ega.",
+  },
+  {
+    icon: "Lightbulb",
+    title: "Zamonaviy metodika",
+    text: "An'anaviy yodlash emas, balki tushunish va mantiqiy fikrlashga asoslangan ilg'or o'qitish uslublari.",
+  },
+  {
+    icon: "Building2",
+    title: "Zamonaviy o'quv markaz",
+    text: "Qulay, yorug' va barcha zarur texnikalar bilan jihozlangan shinam va zamonaviy o'quv xonalari.",
   },
   {
     icon: "LineChart",
-    title: "Doimiy Nazorat",
-    text: "Muntazam mock testlar va talabalar taraqqiyotini kuzatish. Bilakni doimiy nazorat qilib boramiz.",
+    title: "Doimiy nazorat",
+    text: "O'quvchilarning o'zlashtirishi haftalik va oylik testlar orqali qat'iy nazorat qilib boriladi.",
+  },
+  {
+    icon: "Rocket",
+    title: "Tezkor natija",
+    text: "Intensiv darslar va to'g'ri yo'naltirish orqali qisqa muddatda sezilarli va yuqori ballarga erishish kafolati.",
+  },
+  {
+    icon: "Laptop",
+    title: "Online kurslar",
+    text: "Uydan chiqmasdan turib, qulay vaqtda va joyda sifatli ta'lim olish imkoniyati. Masofaviy darslar orqali vaqtingizni tejang va yuqori natijalarga erishing.",
   },
 ];
 
@@ -42,33 +62,25 @@ export const courses = [
   },
 ];
 
-export const teachers = [
-  {
-    name: "Alisher Karimov",
-    subject: "Kimyo",
-    badge: "A+ Sertifikat Egasi",
-    photo: "https://images.pexels.com/photos/8617769/pexels-photo-8617769.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
-    initials: "AK",
-  },
-  {
-    name: "Dilnoza Yusupova",
-    subject: "Biologiya",
-    badge: "A+ Sertifikat Egasi",
-    photo: "https://images.pexels.com/photos/16160869/pexels-photo-16160869.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
-    initials: "DY",
-  },
-  {
-    name: "Sardor Toshmatov",
-    subject: "Kimyo",
-    badge: "Ko'p yillik tajriba",
-    photo: "https://images.pexels.com/photos/13392786/pexels-photo-13392786.png?auto=compress&cs=tinysrgb&h=650&w=940",
-    initials: "ST",
-  },
-  {
-    name: "Madina Rasulova",
-    subject: "Biologiya",
-    badge: "Ko'p yillik tajriba",
-    photo: "https://images.pexels.com/photos/11853989/pexels-photo-11853989.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
-    initials: "MR",
-  },
+export interface Teacher {
+  name: string;
+  subject: "Kimyo" | "Biologiya";
+  role: string;
+  image?: string;
+}
+
+export const teachers: Teacher[] = [
+  // Kimyo
+  { name: "Maxmud Matkarimov", subject: "Kimyo", role: "Kimyo fani o'qituvchisi" },
+  { name: "Otabek Bobojonov", subject: "Kimyo", role: "Kimyo fani o'qituvchisi" },
+  { name: "Diyorbek Tojiboyev", subject: "Kimyo", role: "Kimyo fani o'qituvchisi" },
+  { name: "Qodirbek Sobirov", subject: "Kimyo", role: "Kimyo fani o'qituvchisi" },
+  { name: "Gulnoza Kutlimuratova", subject: "Kimyo", role: "Kimyo fani o'qituvchisi" },
+  { name: "Munisa Marimboyeva", subject: "Kimyo", role: "Kimyo fani o'qituvchisi" },
+
+  // Biologiya
+  { name: "Diyorbek Erkinov", subject: "Biologiya", role: "Biologiya fani o'qituvchisi" },
+  { name: "Shodiya Baxodirova", subject: "Biologiya", role: "Biologiya fani o'qituvchisi" },
+  { name: "Zuhra Sharifboyeva", subject: "Biologiya", role: "Biologiya fani o'qituvchisi" },
+  { name: "Charos Otaboyeva", subject: "Biologiya", role: "Biologiya fani o'qituvchisi" },
 ];

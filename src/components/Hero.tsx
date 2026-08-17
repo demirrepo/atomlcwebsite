@@ -63,7 +63,7 @@ export default function Hero() {
           {/* Mini stats */}
           <div className="mt-10 flex flex-wrap gap-6">
             {[
-              { n: "500+", t: "Bitiruvchi talaba" },
+              { n: "3000+", t: "Bitiruvchi talaba" },
               { n: "A+", t: "O'rtacha natija" },
               { n: "8 yil", t: "Tajriba" },
             ].map((s) => (

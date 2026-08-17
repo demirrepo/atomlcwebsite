@@ -6,7 +6,7 @@ export default function Contact() {
     {
       icon: Phone,
       label: "Telefon",
-      value: "+998 93 896 89 09",
+      value: "+998 90 719 89 09",
       href: "tel:+998938968909",
       color: "brand",
     },
@@ -18,16 +18,9 @@ export default function Contact() {
       color: "bio",
     },
     {
-      icon: MapPin,
-      label: "Manzil",
-      value: "Urganch shahri, Al-Xorazmiy ko'chasi 12",
-      href: "#aloqa",
-      color: "brand",
-    },
-    {
       icon: Clock,
       label: "Ish vaqti",
-      value: "Har kuni, 9:00 — 20:00",
+      value: "Har kuni, 9:00 — 19:00",
       href: "#aloqa",
       color: "bio",
     },
@@ -59,11 +52,10 @@ export default function Contact() {
                   className="group flex items-center gap-4 rounded-2xl border border-ink-200 bg-white p-5 shadow-soft transition-all hover:-translate-y-0.5 hover:border-brand-300 hover:shadow-glow"
                 >
                   <span
-                    className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl transition-all ${
-                      isBrand
-                        ? "bg-brand-100 text-brand-700 group-hover:bg-brand-600 group-hover:text-white"
-                        : "bg-bio-100 text-bio-700 group-hover:bg-bio-600 group-hover:text-white"
-                    }`}
+                    className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl transition-all ${isBrand
+                      ? "bg-brand-100 text-brand-700 group-hover:bg-brand-600 group-hover:text-white"
+                      : "bg-bio-100 text-bio-700 group-hover:bg-bio-600 group-hover:text-white"
+                      }`}
                   >
                     <Icon className="h-6 w-6" />
                   </span>
@@ -74,6 +66,30 @@ export default function Contact() {
                 </a>
               );
             })}
+
+            {/* Manzillarimiz Card with both branches */}
+            <div className="group flex items-start gap-4 rounded-2xl border border-ink-200 bg-white p-5 shadow-soft transition-all">
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-brand-100 text-brand-700">
+                <MapPin className="h-6 w-6" />
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-semibold uppercase tracking-wide text-ink-400">Manzillarimiz</p>
+                <div className="mt-3 space-y-3">
+                  <div>
+                    <span className="inline-block rounded-full bg-brand-50 px-2 py-0.5 text-xs font-bold text-brand-700 mb-1">
+                      1-filial
+                    </span>
+                    <p className="text-sm font-bold text-ink-900">Urganch shahar, Fayazov ko'chasi 1A-uy</p>
+                  </div>
+                  <div>
+                    <span className="inline-block rounded-full bg-bio-50 px-2 py-0.5 text-xs font-bold text-bio-700 mb-1">
+                      2-filial
+                    </span>
+                    <p className="text-sm font-bold text-ink-900">Gurlan tumani, O'zbekiston do'koni</p>
+                  </div>
+                </div>
+              </div>
+            </div>
 
             <a
               href={REG_URL}
@@ -86,15 +102,16 @@ export default function Contact() {
             </a>
           </div>
 
-          {/* Right: map */}
-          <div className="overflow-hidden rounded-2xl border border-ink-200 bg-white shadow-soft">
+          {/* Right Column: Google Maps Container */}
+          <div className="relative min-h-[400px] w-full overflow-hidden rounded-3xl lg:h-full">
             <iframe
-              title="Atom O'quv Markazi xaritada"
-              src="https://www.google.com/maps?q=Urganch,Uzbekistan&output=embed"
-              className="h-full min-h-[320px] w-full"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2608.858694871246!2d60.60947083049089!3d41.558383416822075!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x41dfc94d500c5add%3A0x31e1c9980d71ed19!2s%22ATOM%22%20innovatsion%20ta'lim%20markazi!5e0!3m2!1sen!2s!4v1786969943746!5m2!1sen!2s"
+              className="absolute inset-0 h-full w-full"
+              style={{ border: 0 }}
+              allowFullScreen={true}
               loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-            />
+              referrerPolicy="strict-origin-when-cross-origin"
+            ></iframe>
           </div>
         </div>
       </div>
