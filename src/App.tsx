@@ -1,23 +1,32 @@
-import Navbar from "@/components/Navbar";
-import Hero from "@/components/Hero";
-import Advantages from "@/components/Advantages";
-import Courses from "@/components/Courses";
-import Teachers from "@/components/Teachers";
-import Contact from "@/components/Contact";
-import Footer from "@/components/Footer";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Hero from "./components/Hero";
+import Courses from "./components/Courses";
+import Advantages from "./components/Advantages";
+import Teachers from "./components/Teachers";
+import Contact from "./components/Contact";
+import Admin from "./pages/Admin";
 
-export default function App() {
+function MainWebsite() {
   return (
-    <div className="min-h-screen bg-white font-sans text-ink-900 antialiased">
-      <Navbar />
+    <div className="min-h-screen bg-white text-ink-900 font-sans">
       <main>
         <Hero />
-        <Advantages />
         <Courses />
+        <Advantages />
         <Teachers />
         <Contact />
       </main>
-      <Footer />
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<MainWebsite />} />
+        <Route path="/admin" element={<Admin />} />
+      </Routes>
+    </Router>
   );
 }
