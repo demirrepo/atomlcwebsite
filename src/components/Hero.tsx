@@ -38,7 +38,7 @@ export default function Hero() {
           </h1>
 
           <p className="mt-5 max-w-xl text-lg leading-relaxed text-ink-600">
-            Kimyo va Biologiya fanlaridan intensiv DTM va Milliy Sertifikat kurslari. Biz bilan talaba bo'ling!
+            Kimyo va Biologiya fanlaridan intensiv DTM va Milliy Sertifikat kurslari. Biz bilan talaba bo'lish oson!
           </p>
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">

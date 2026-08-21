@@ -1,4 +1,4 @@
-import { Phone, Send, MapPin, Clock, ArrowUpRight } from "lucide-react";
+import { Phone, Send, MapPin, Clock, ArrowUpRight, Instagram } from "lucide-react";
 import { REG_URL } from "@/data";
 
 export default function Contact() {
@@ -16,6 +16,13 @@ export default function Contact() {
       value: "@ONLINE_ATOM",
       href: "https://t.me/ONLINE_ATOM",
       color: "bio",
+    },
+    {
+      icon: Instagram,
+      label: "Instagram",
+      value: "@atom_urganch",
+      href: "https://www.instagram.com/atom_urganch",
+      color: "brand",
     },
     {
       icon: Clock,
