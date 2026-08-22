@@ -2,37 +2,6 @@ import { Phone, Send, MapPin, Clock, ArrowUpRight, Instagram } from "lucide-reac
 import { REG_URL } from "@/data";
 
 export default function Contact() {
-  const contacts = [
-    {
-      icon: Phone,
-      label: "Telefon",
-      value: "+998 90 719 89 09",
-      href: "tel:+998938968909",
-      color: "brand",
-    },
-    {
-      icon: Send,
-      label: "Telegram",
-      value: "@ONLINE_ATOM",
-      href: "https://t.me/ONLINE_ATOM",
-      color: "bio",
-    },
-    {
-      icon: Instagram,
-      label: "Instagram",
-      value: "@atom_urganch",
-      href: "https://www.instagram.com/atom_urganch",
-      color: "brand",
-    },
-    {
-      icon: Clock,
-      label: "Ish vaqti",
-      value: "Har kuni, 9:00 — 19:00",
-      href: "#aloqa",
-      color: "bio",
-    },
-  ];
-
   return (
     <section id="aloqa" className="relative bg-ink-50 py-20 lg:py-28">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -47,36 +16,48 @@ export default function Contact() {
         <div className="mt-14 grid grid-cols-1 gap-6 lg:grid-cols-2">
           {/* Left: contact info */}
           <div className="flex flex-col gap-4">
-            {contacts.map((c) => {
-              const Icon = c.icon;
-              const isBrand = c.color === "brand";
-              return (
-                <a
-                  key={c.label}
-                  href={c.href}
-                  target={c.href.startsWith("http") ? "_blank" : undefined}
-                  rel={c.href.startsWith("http") ? "noopener noreferrer" : undefined}
-                  className="group flex items-center gap-4 rounded-2xl border border-ink-200 bg-white p-5 shadow-soft transition-all hover:-translate-y-0.5 hover:border-brand-300 hover:shadow-glow"
-                >
-                  <span
-                    className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl transition-all ${isBrand
-                      ? "bg-brand-100 text-brand-700 group-hover:bg-brand-600 group-hover:text-white"
-                      : "bg-bio-100 text-bio-700 group-hover:bg-bio-600 group-hover:text-white"
-                      }`}
-                  >
-                    <Icon className="h-6 w-6" />
-                  </span>
-                  <div className="min-w-0">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-ink-400">{c.label}</p>
-                    <p className="truncate text-base font-bold text-ink-900">{c.value}</p>
-                  </div>
-                </a>
-              );
-            })}
 
-            {/* Manzillarimiz Card with both branches */}
-            <div className="group flex items-start gap-4 rounded-2xl border border-ink-200 bg-white p-5 shadow-soft transition-all">
-              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-brand-100 text-brand-700">
+            {/* 1. Telefon */}
+            <a href="tel:+998907198909" className="group flex items-center gap-4 rounded-2xl border border-ink-200 bg-white p-5 shadow-soft transition-all hover:-translate-y-0.5 hover:border-brand-300 hover:shadow-glow">
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl transition-all bg-brand-100 text-brand-700 group-hover:bg-brand-600 group-hover:text-white">
+                <Phone className="h-6 w-6" />
+              </span>
+              <div className="min-w-0">
+                <p className="text-xs font-semibold uppercase tracking-wide text-ink-400">Telefon</p>
+                <p className="truncate text-base font-bold text-ink-900">+998 90 719 89 09</p>
+              </div>
+            </a>
+
+            {/* 2. Telegram & Instagram (Combined Block) */}
+            <div className="group flex items-center gap-4 rounded-2xl border border-ink-200 bg-white p-5 shadow-soft transition-all hover:-translate-y-0.5 hover:border-brand-300 hover:shadow-glow">
+              <div className="flex gap-2 shrink-0">
+                <a href="https://t.me/atom_urganch" target="_blank" rel="noopener noreferrer" title="Telegram" className="flex h-12 w-12 items-center justify-center rounded-xl bg-bio-100 text-bio-700 hover:-translate-y-1 hover:bg-bio-600 hover:text-white transition-all">
+                  <Send className="h-6 w-6" />
+                </a>
+                <a href="https://www.instagram.com/atom_urganch" target="_blank" rel="noopener noreferrer" title="Instagram" className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-100 text-brand-700 hover:-translate-y-1 hover:bg-brand-600 hover:text-white transition-all">
+                  <Instagram className="h-6 w-6" />
+                </a>
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs font-semibold uppercase tracking-wide text-ink-400">Ijtimoiy tarmoqlar</p>
+                <p className="truncate text-base font-bold text-ink-900">@atom_urganch</p>
+              </div>
+            </div>
+
+            {/* 3. Ish vaqti */}
+            <div className="group flex items-center gap-4 rounded-2xl border border-ink-200 bg-white p-5 shadow-soft transition-all hover:-translate-y-0.5 hover:border-brand-300 hover:shadow-glow">
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl transition-all bg-bio-100 text-bio-700 group-hover:bg-bio-600 group-hover:text-white">
+                <Clock className="h-6 w-6" />
+              </span>
+              <div className="min-w-0">
+                <p className="text-xs font-semibold uppercase tracking-wide text-ink-400">Ish vaqti</p>
+                <p className="truncate text-base font-bold text-ink-900">Har kuni, 9:00 — 19:00</p>
+              </div>
+            </div>
+
+            {/* 4. Manzillarimiz */}
+            <div className="group flex items-start gap-4 rounded-2xl border border-ink-200 bg-white p-5 shadow-soft transition-all hover:border-brand-300 hover:shadow-glow">
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-brand-100 text-brand-700 transition-all group-hover:bg-brand-600 group-hover:text-white">
                 <MapPin className="h-6 w-6" />
               </span>
               <div className="min-w-0 flex-1">
