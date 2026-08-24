@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/supabase";
-import { Layers, Users, Lightbulb, Building2, LineChart, Rocket, Laptop } from "lucide-react";
+// 1. I added Target and Activity to your imports here 👇
+import { Layers, Users, Lightbulb, Building2, LineChart, Rocket, Laptop, Target, Activity } from "lucide-react";
 
 // Define the database shape
 interface Advantage {
@@ -10,7 +11,7 @@ interface Advantage {
   text: string;
 }
 
-// Map the string names from Supabase to actual Lucide React components
+// 2. I added Target and Activity to your icon map here 👇
 const iconMap: Record<string, React.ElementType> = {
   Layers,
   Users,
@@ -19,6 +20,8 @@ const iconMap: Record<string, React.ElementType> = {
   LineChart,
   Rocket,
   Laptop,
+  Target,
+  Activity,
 };
 
 export default function Advantages() {
@@ -27,7 +30,11 @@ export default function Advantages() {
 
   useEffect(() => {
     const fetchAdvantages = async () => {
-      const { data, error } = await supabase.from("advantages").select("*");
+      // 3. Here is the magic .order() line to fix the sorting! 👇
+      const { data, error } = await supabase
+        .from("advantages")
+        .select("*")
+        .order("id", { ascending: true });
 
       if (error) {
         console.error("Error fetching advantages:", error);

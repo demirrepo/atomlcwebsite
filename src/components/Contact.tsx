@@ -41,7 +41,7 @@ export default function Contact() {
               <div className="min-w-0">
                 <p className="text-xs font-semibold uppercase tracking-wide text-ink-400">Ijtimoiy tarmoqlar</p>
                 <p className="truncate text-base font-bold text-ink-900">@atom_urganch</p>
-              </div>
+              </div>  
             </div>
 
             {/* 3. Ish vaqti */}
