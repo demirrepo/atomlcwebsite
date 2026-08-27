@@ -1,10 +1,14 @@
 import { useEffect, useState } from "react";
 import { Atom, Menu, X, ArrowUpRight } from "lucide-react";
 import { navLinks, REG_URL } from "@/data";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+
+  const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -15,16 +19,31 @@ export default function Navbar() {
 
   const handleNav = (href: string) => {
     setOpen(false);
-    document.querySelector(href)?.scrollIntoView({ behavior: "smooth" });
+
+    if (href.startsWith("#")) {
+      // If we are NOT on the home page, go home first, then scroll
+      if (location.pathname !== "/") {
+        navigate("/");
+        setTimeout(() => {
+          document.querySelector(href)?.scrollIntoView({ behavior: "smooth" });
+        }, 100);
+      } else {
+        // If we are already home, just scroll smoothly
+        document.querySelector(href)?.scrollIntoView({ behavior: "smooth" });
+      }
+    } else {
+      // If it's a completely new page (like /natijalar), route to it directly
+      navigate(href);
+      window.scrollTo(0, 0); // Reset scroll to top
+    }
   };
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? "bg-white/85 backdrop-blur-xl border-b border-ink-200/70 shadow-soft"
-          : "bg-transparent"
-      }`}
+      className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${scrolled
+        ? "bg-white/85 backdrop-blur-xl border-b border-ink-200/70 shadow-soft"
+        : "bg-transparent"
+        }`}
     >
       <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Logo */}
@@ -40,9 +59,8 @@ export default function Navbar() {
             <Atom className="h-5 w-5" strokeWidth={2.5} />
           </span>
           <span
-            className={`text-xl font-extrabold tracking-tight transition-colors ${
-              scrolled ? "text-ink-900" : "text-ink-900"
-            }`}
+            className={`text-xl font-extrabold tracking-tight transition-colors ${scrolled ? "text-ink-900" : "text-ink-900"
+              }`}
           >
             ATOM
           </span>
@@ -60,6 +78,23 @@ export default function Navbar() {
               <span className="absolute inset-x-3 -bottom-0.5 h-0.5 origin-left scale-x-0 rounded-full bg-brand-600 transition-transform duration-300 group-hover:scale-x-100" />
             </button>
           ))}
+
+          {/* New Page Links */}
+          <button
+            onClick={() => handleNav('/biz-haqimizda')}
+            className="group relative rounded-lg px-4 py-2 text-sm font-semibold text-ink-700 transition-colors hover:text-brand-700"
+          >
+            Biz Haqimizda
+            <span className="absolute inset-x-3 -bottom-0.5 h-0.5 origin-left scale-x-0 rounded-full bg-brand-600 transition-transform duration-300 group-hover:scale-x-100" />
+          </button>
+
+          <button
+            onClick={() => handleNav('/natijalar')}
+            className="group relative rounded-lg px-4 py-2 text-sm font-semibold text-ink-700 transition-colors hover:text-brand-700"
+          >
+            Natijalar
+            <span className="absolute inset-x-3 -bottom-0.5 h-0.5 origin-left scale-x-0 rounded-full bg-brand-600 transition-transform duration-300 group-hover:scale-x-100" />
+          </button>
         </div>
 
         {/* Desktop CTA */}
@@ -85,9 +120,8 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       <div
-        className={`overflow-hidden border-t border-ink-200/70 bg-white/95 backdrop-blur-xl transition-[max-height,opacity] duration-300 md:hidden ${
-          open ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
-        }`}
+        className={`overflow-hidden border-t border-ink-200/70 bg-white/95 backdrop-blur-xl transition-[max-height,opacity] duration-300 md:hidden ${open ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+          }`}
       >
         <div className="space-y-1 px-4 py-4">
           {navLinks.map((l) => (
@@ -99,6 +133,21 @@ export default function Navbar() {
               {l.label}
             </button>
           ))}
+
+          <button
+            onClick={() => handleNav('/biz-haqimizda')}
+            className="block w-full rounded-lg px-4 py-3 text-left text-base font-semibold text-ink-700 transition hover:bg-brand-50 hover:text-brand-700"
+          >
+            Biz Haqimizda
+          </button>
+
+          <button
+            onClick={() => handleNav('/natijalar')}
+            className="block w-full rounded-lg px-4 py-3 text-left text-base font-semibold text-ink-700 transition hover:bg-brand-50 hover:text-brand-700"
+          >
+            Natijalar
+          </button>
+
           <a
             href={REG_URL}
             target="_blank"

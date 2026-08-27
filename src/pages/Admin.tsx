@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/supabase";
 import {
-    Lock, LogOut, Trash2, Plus, ArrowLeft, Users, BookOpen, Star,
+    Lock, LogOut, Trash2, Plus, Users, BookOpen, Star,
     FlaskConical, Dna, Layers, Lightbulb, Building2, LineChart,
     Rocket, Laptop, Globe, Target, Award, Zap, Shield, CheckCircle2,
     GripVertical, Edit2, X
@@ -21,7 +21,6 @@ const iconOptions = [
     { name: "Zap", component: Zap }, { name: "Shield", component: Shield },
 ];
 
-// --- DRAG AND DROP COMPONENT FOR TEACHERS ---
 function SortableTeacherItem({ t, onEdit, onDelete }: any) {
     const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: t.id });
     const style = { transform: CSS.Transform.toString(transform), transition };
@@ -47,20 +46,30 @@ export default function Admin() {
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const [activeTab, setActiveTab] = useState("courses");
-    const [editingId, setEditingId] = useState<number | null>(null);
+    const [editingId, setEditingId] = useState<any>(null);
 
     const [teachers, setTeachers] = useState<any[]>([]);
     const [courses, setCourses] = useState<any[]>([]);
     const [advantages, setAdvantages] = useState<any[]>([]);
+    const [results, setResults] = useState<any[]>([]);
 
-    // Forms
     const [teacherForm, setTeacherForm] = useState({ name: "", subject: "Kimyo", role: "Kimyo fani o'qituvchisi", existingImage: "" });
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [isUploading, setIsUploading] = useState(false);
+
     const [courseForm, setCourseForm] = useState({ title: "", text: "", icon: "FlaskConical", color: "brand", language: "UZ / RU" });
     const [courseFeatures, setCourseFeatures] = useState<string[]>([]);
     const [featureInput, setFeatureInput] = useState("");
+
     const [advForm, setAdvForm] = useState({ title: "", text: "", icon: "Lightbulb" });
+
+    // Results Form States
+    const [resName, setResName] = useState("");
+    const [resType, setResType] = useState<"DTM" | "MS">("DTM");
+    const [resScore, setResScore] = useState(""); // <-- Added Score State
+    const [resDate, setResDate] = useState("");
+    const [resImageFile, setResImageFile] = useState<File | null>(null);
+    const [isUploadingRes, setIsUploadingRes] = useState(false);
 
     const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }));
 
@@ -71,14 +80,16 @@ export default function Admin() {
     }, []);
 
     const fetchAllData = async () => {
-        const [t, c, a] = await Promise.all([
+        const [t, c, a, r] = await Promise.all([
             supabase.from("teachers").select("*").order("sort_order", { ascending: true }),
             supabase.from("courses").select("*").order("id", { ascending: true }),
-            supabase.from("advantages").select("*").order("id", { ascending: true })
+            supabase.from("advantages").select("*").order("id", { ascending: true }),
+            supabase.from("results").select("*").order("created_at", { ascending: false })
         ]);
         if (t.data) setTeachers(t.data);
         if (c.data) setCourses(c.data);
         if (a.data) setAdvantages(a.data);
+        if (r.data) setResults(r.data);
     };
 
     const cancelEdit = () => {
@@ -90,7 +101,6 @@ export default function Admin() {
         setAdvForm({ title: "", text: "", icon: "Lightbulb" });
     };
 
-    // --- SUBMIT TEACHER (ADD OR EDIT) ---
     const handleTeacherSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!teacherForm.name) return;
@@ -117,7 +127,6 @@ export default function Admin() {
         setIsUploading(false);
     };
 
-    // --- SUBMIT COURSE (ADD OR EDIT) ---
     const handleCourseSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!courseForm.title) return;
@@ -133,7 +142,6 @@ export default function Admin() {
 
     const addFeature = () => { if (featureInput.trim()) { setCourseFeatures([...courseFeatures, featureInput.trim()]); setFeatureInput(""); } };
 
-    // --- SUBMIT ADVANTAGE (ADD OR EDIT) ---
     const handleAdvantageSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!advForm.title) return;
@@ -145,22 +153,77 @@ export default function Admin() {
         fetchAllData();
     };
 
-    const handleDelete = async (table: string, id: number) => {
+    const handleResultSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!resImageFile || !resName || !resDate || !resScore) {
+            alert("Iltimos, barcha maydonlarni, shu jumladan ballni to'ldiring!");
+            return;
+        }
+
+        setIsUploadingRes(true);
+
+        try {
+            const fileExt = resImageFile.name.split(".").pop();
+            const fileName = `${Date.now()}_${Math.random().toString(36).substring(2)}.${fileExt}`;
+
+            const { error: uploadError } = await supabase.storage.from("certificates").upload(fileName, resImageFile);
+            if (uploadError) throw uploadError;
+
+            const { data: publicUrlData } = supabase.storage.from("certificates").getPublicUrl(fileName);
+            const imageUrl = publicUrlData.publicUrl;
+
+            const { error: insertError } = await supabase.from("results").insert([{
+                student_name: resName,
+                exam_type: resType,
+                score: resScore, // <-- Added Score Payload
+                date_received: resDate,
+                image_url: imageUrl,
+            }]);
+
+            if (insertError) throw insertError;
+
+            alert("Sertifikat muvaffaqiyatli qo'shildi! 🎉");
+            setResName(""); setResScore(""); setResDate(""); setResImageFile(null);
+
+            const fileInput = document.getElementById('res-file-upload') as HTMLInputElement;
+            if (fileInput) fileInput.value = '';
+
+            fetchAllData();
+        } catch (error: any) {
+            alert("Xatolik yuz berdi: " + error.message);
+        } finally {
+            setIsUploadingRes(false);
+        }
+    };
+
+    const handleDelete = async (table: string, id: any) => {
         if (!confirm("Haqiqatan ham buni o'chirmoqchimisiz?")) return;
         await supabase.from(table).delete().eq("id", id);
         fetchAllData();
     };
 
-    // --- DRAG AND DROP HANDLER ---
+    const handleResultDelete = async (id: string, imageUrl: string) => {
+        if (!confirm("Haqiqatan ham bu natijani o'chirmoqchimisiz?")) return;
+        try {
+            await supabase.from("results").delete().eq("id", id);
+            const fileName = imageUrl.split('/').pop();
+            if (fileName) {
+                await supabase.storage.from("certificates").remove([fileName]);
+            }
+            fetchAllData();
+        } catch (error: any) {
+            alert("O'chirishda xatolik: " + error.message);
+        }
+    };
+
     const handleDragEnd = async (event: DragEndEvent) => {
         const { active, over } = event;
         if (over && active.id !== over.id) {
             const oldIndex = teachers.findIndex(t => t.id === active.id);
             const newIndex = teachers.findIndex(t => t.id === over.id);
             const newOrder = arrayMove(teachers, oldIndex, newIndex);
-            setTeachers(newOrder); // Update UI instantly
+            setTeachers(newOrder);
 
-            // Update DB in background
             await Promise.all(newOrder.map((t, index) =>
                 supabase.from("teachers").update({ sort_order: index }).eq("id", t.id)
             ));
@@ -198,10 +261,10 @@ export default function Admin() {
                     <button onClick={() => { setActiveTab("courses"); cancelEdit(); }} className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-bold transition-all ${activeTab === "courses" ? "bg-ink-900 text-white" : "bg-white text-ink-600 hover:bg-ink-100"}`}><BookOpen className="h-4 w-4" /> Kurslar</button>
                     <button onClick={() => { setActiveTab("teachers"); cancelEdit(); }} className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-bold transition-all ${activeTab === "teachers" ? "bg-ink-900 text-white" : "bg-white text-ink-600 hover:bg-ink-100"}`}><Users className="h-4 w-4" /> Ustozlar</button>
                     <button onClick={() => { setActiveTab("advantages"); cancelEdit(); }} className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-bold transition-all ${activeTab === "advantages" ? "bg-ink-900 text-white" : "bg-white text-ink-600 hover:bg-ink-100"}`}><Star className="h-4 w-4" /> Afzalliklar</button>
+                    <button onClick={() => { setActiveTab("results"); cancelEdit(); }} className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-bold transition-all ${activeTab === "results" ? "bg-brand-600 text-white" : "bg-white text-ink-600 hover:bg-ink-100"}`}><Award className="h-4 w-4" /> Natijalar</button>
                 </div>
 
                 <div className="grid gap-8 lg:grid-cols-3">
-                    {/* FORMS SECTION */}
                     <div className="rounded-2xl border border-ink-200 bg-white p-6 shadow-soft lg:col-span-1 h-fit">
 
                         {activeTab === "teachers" && (
@@ -288,9 +351,36 @@ export default function Admin() {
                                 </form>
                             </>
                         )}
+
+                        {activeTab === "results" && (
+                            <>
+                                <h2 className="text-lg font-bold mb-4 text-brand-600">Yangi Natija Qo'shish</h2>
+                                <form onSubmit={handleResultSubmit} className="space-y-4">
+                                    <input type="text" value={resName} onChange={(e) => setResName(e.target.value)} placeholder="O'quvchining F.I.O." required className="w-full rounded-xl border p-2.5 text-sm" />
+
+                                    <div className="flex gap-2">
+                                        <select value={resType} onChange={(e) => setResType(e.target.value as "DTM" | "MS")} className="w-1/2 rounded-xl border p-2.5 text-sm bg-white">
+                                            <option value="DTM">DTM</option>
+                                            <option value="MS">Milliy Sertifikat</option>
+                                        </select>
+                                        <input type="text" value={resScore} onChange={(e) => setResScore(e.target.value)} placeholder="Ball (masalan: 98.2)" required className="w-1/2 rounded-xl border p-2.5 text-sm" />
+                                    </div>
+
+                                    <input type="date" value={resDate} onChange={(e) => setResDate(e.target.value)} required className="w-full rounded-xl border p-2.5 text-sm" />
+
+                                    <div>
+                                        <label className="mb-1 block text-xs font-semibold text-ink-500">Sertifikat Rasmi</label>
+                                        <input id="res-file-upload" type="file" accept="image/*" onChange={(e) => setResImageFile(e.target.files?.[0] || null)} required className="w-full rounded-xl border p-2 text-sm file:mr-4 file:rounded-lg file:border-0 file:bg-brand-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-brand-700 cursor-pointer" />
+                                    </div>
+
+                                    <button type="submit" disabled={isUploadingRes} className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-600 p-3 font-bold text-white hover:bg-brand-700 disabled:opacity-50">
+                                        <Plus className="h-4 w-4" /> {isUploadingRes ? "Yuklanmoqda..." : "Natijani Qo'shish"}
+                                    </button>
+                                </form>
+                            </>
+                        )}
                     </div>
 
-                    {/* LISTS SECTION */}
                     <div className="col-span-2 rounded-2xl border border-ink-200 bg-white p-6 shadow-soft">
                         <h2 className="mb-4 text-lg font-bold">Mavjud ma'lumotlar ro'yxati</h2>
                         <div className="max-h-[600px] space-y-3 overflow-y-auto pr-2">
@@ -324,6 +414,28 @@ export default function Admin() {
                                     </div>
                                 </div>
                             ))}
+
+                            {activeTab === "results" && results.map((r) => (
+                                <div key={r.id} className="flex items-center justify-between rounded-xl border p-4 hover:border-brand-200 bg-white">
+                                    <div className="flex items-center gap-4">
+                                        <img src={r.image_url} alt="cert" className="h-12 w-16 object-cover rounded-lg border border-ink-200" />
+                                        <div>
+                                            <p className="font-bold">{r.student_name} <span className="text-xs font-semibold bg-blue-50 text-blue-600 px-2 py-0.5 rounded ml-2">{r.score} ball</span></p>
+                                            <p className="text-xs font-medium text-gray-500">
+                                                <span className="text-brand-600">{r.exam_type}</span> &bull; {new Date(r.date_received).toLocaleDateString("uz-UZ")}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <button onClick={() => handleResultDelete(r.id, r.image_url)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg">
+                                        <Trash2 className="h-4 w-4" />
+                                    </button>
+                                </div>
+                            ))}
+
+                            {activeTab === "results" && results.length === 0 && (
+                                <p className="text-center text-ink-500 py-10 text-sm">Hozircha natijalar yo'q.</p>
+                            )}
+
                         </div>
                     </div>
                 </div>
