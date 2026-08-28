@@ -63,10 +63,10 @@ export default function Admin() {
 
     const [advForm, setAdvForm] = useState({ title: "", text: "", icon: "Lightbulb" });
 
-    // Results Form States
     const [resName, setResName] = useState("");
     const [resType, setResType] = useState<"DTM" | "MS">("DTM");
-    const [resScore, setResScore] = useState(""); // <-- Added Score State
+    const [resScore, setResScore] = useState("");
+    const [resLevel, setResLevel] = useState("");
     const [resDate, setResDate] = useState("");
     const [resImageFile, setResImageFile] = useState<File | null>(null);
     const [isUploadingRes, setIsUploadingRes] = useState(false);
@@ -156,7 +156,7 @@ export default function Admin() {
     const handleResultSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!resImageFile || !resName || !resDate || !resScore) {
-            alert("Iltimos, barcha maydonlarni, shu jumladan ballni to'ldiring!");
+            alert("Iltimos, barcha majburiy maydonlarni to'ldiring!");
             return;
         }
 
@@ -175,7 +175,8 @@ export default function Admin() {
             const { error: insertError } = await supabase.from("results").insert([{
                 student_name: resName,
                 exam_type: resType,
-                score: resScore, // <-- Added Score Payload
+                score: resScore,
+                level: resLevel,
                 date_received: resDate,
                 image_url: imageUrl,
             }]);
@@ -183,7 +184,7 @@ export default function Admin() {
             if (insertError) throw insertError;
 
             alert("Sertifikat muvaffaqiyatli qo'shildi! 🎉");
-            setResName(""); setResScore(""); setResDate(""); setResImageFile(null);
+            setResName(""); setResScore(""); setResLevel(""); setResDate(""); setResImageFile(null);
 
             const fileInput = document.getElementById('res-file-upload') as HTMLInputElement;
             if (fileInput) fileInput.value = '';
@@ -358,12 +359,13 @@ export default function Admin() {
                                 <form onSubmit={handleResultSubmit} className="space-y-4">
                                     <input type="text" value={resName} onChange={(e) => setResName(e.target.value)} placeholder="O'quvchining F.I.O." required className="w-full rounded-xl border p-2.5 text-sm" />
 
-                                    <div className="flex gap-2">
-                                        <select value={resType} onChange={(e) => setResType(e.target.value as "DTM" | "MS")} className="w-1/2 rounded-xl border p-2.5 text-sm bg-white">
+                                    <div className="grid grid-cols-3 gap-2">
+                                        <select value={resType} onChange={(e) => setResType(e.target.value as "DTM" | "MS")} className="w-full rounded-xl border p-2.5 text-sm bg-white">
                                             <option value="DTM">DTM</option>
                                             <option value="MS">Milliy Sertifikat</option>
                                         </select>
-                                        <input type="text" value={resScore} onChange={(e) => setResScore(e.target.value)} placeholder="Ball (masalan: 98.2)" required className="w-1/2 rounded-xl border p-2.5 text-sm" />
+                                        <input type="text" value={resScore} onChange={(e) => setResScore(e.target.value)} placeholder="Ball (mas: 98.2)" required className="w-full rounded-xl border p-2.5 text-sm" />
+                                        <input type="text" value={resLevel} onChange={(e) => setResLevel(e.target.value)} placeholder="Daraja (mas: A+)" className="w-full rounded-xl border p-2.5 text-sm" />
                                     </div>
 
                                     <input type="date" value={resDate} onChange={(e) => setResDate(e.target.value)} required className="w-full rounded-xl border p-2.5 text-sm" />
@@ -420,7 +422,11 @@ export default function Admin() {
                                     <div className="flex items-center gap-4">
                                         <img src={r.image_url} alt="cert" className="h-12 w-16 object-cover rounded-lg border border-ink-200" />
                                         <div>
-                                            <p className="font-bold">{r.student_name} <span className="text-xs font-semibold bg-blue-50 text-blue-600 px-2 py-0.5 rounded ml-2">{r.score} ball</span></p>
+                                            <p className="font-bold">
+                                                {r.student_name}
+                                                <span className="text-xs font-semibold bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded ml-2">{r.score} ball</span>
+                                                {r.level && <span className="text-xs font-semibold bg-purple-50 text-purple-600 px-2 py-0.5 rounded ml-2">{r.level}</span>}
+                                            </p>
                                             <p className="text-xs font-medium text-gray-500">
                                                 <span className="text-brand-600">{r.exam_type}</span> &bull; {new Date(r.date_received).toLocaleDateString("uz-UZ")}
                                             </p>

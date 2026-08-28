@@ -7,6 +7,7 @@ interface ResultItem {
     student_name: string;
     exam_type: "DTM" | "MS";
     score: string;
+    level?: string;
     date_received: string;
     image_url: string;
 }
@@ -41,14 +42,12 @@ export default function Results() {
         <div className="min-h-screen bg-white bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] bg-[size:40px_40px] py-12 px-4 sm:px-6 lg:px-8 font-sans">
             <div className="max-w-7xl mx-auto">
 
-                {/* Back Button */}
                 <div className="mb-8">
                     <Link to="/" className="inline-flex items-center text-sm font-bold text-blue-600 hover:text-blue-800 transition-colors">
                         &larr; Asosiy sahifaga qaytish
                     </Link>
                 </div>
 
-                {/* Header */}
                 <div className="text-center mb-12">
                     <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight mb-4">
                         O'quvchilarimiz Natijalari
@@ -58,14 +57,13 @@ export default function Results() {
                     </p>
                 </div>
 
-                {/* Apple-Style Segmented Control Tabs */}
                 <div className="flex justify-center mb-12">
                     <div className="bg-gray-200/50 p-1.5 rounded-2xl inline-flex space-x-1 shadow-inner backdrop-blur-sm">
                         <button
                             onClick={() => setActiveTab("DTM")}
                             className={`px-8 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 ${activeTab === "DTM"
-                                ? "bg-white text-blue-600 shadow-sm ring-1 ring-black/5"
-                                : "text-gray-500 hover:text-gray-700"
+                                    ? "bg-white text-blue-600 shadow-sm ring-1 ring-black/5"
+                                    : "text-gray-500 hover:text-gray-700"
                                 }`}
                         >
                             DTM Natijalari
@@ -73,8 +71,8 @@ export default function Results() {
                         <button
                             onClick={() => setActiveTab("MS")}
                             className={`px-8 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 ${activeTab === "MS"
-                                ? "bg-white text-blue-600 shadow-sm ring-1 ring-black/5"
-                                : "text-gray-500 hover:text-gray-700"
+                                    ? "bg-white text-blue-600 shadow-sm ring-1 ring-black/5"
+                                    : "text-gray-500 hover:text-gray-700"
                                 }`}
                         >
                             Milliy Sertifikat (MS)
@@ -82,7 +80,6 @@ export default function Results() {
                     </div>
                 </div>
 
-                {/* Content Display */}
                 {loading ? (
                     <div className="flex justify-center py-20">
                         <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div>
@@ -94,7 +91,6 @@ export default function Results() {
                                 key={item.id}
                                 className="bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 group flex flex-col"
                             >
-                                {/* Changed to Portrait A4-style aspect ratio (3/4) */}
                                 <div className="aspect-[3/4] bg-gray-100 overflow-hidden relative">
                                     <img
                                         src={item.image_url}
@@ -104,15 +100,22 @@ export default function Results() {
                                 </div>
                                 <div className="p-6 flex flex-col justify-between flex-1">
                                     <div>
-                                        <div className="flex items-center justify-between mb-2">
-                                            <h3 className="text-xl font-bold text-gray-900">
+                                        <div className="flex items-start justify-between mb-2 gap-2">
+                                            <h3 className="text-xl font-bold text-gray-900 leading-tight">
                                                 {item.student_name}
                                             </h3>
-                                            {item.score && (
-                                                <span className="bg-emerald-50 text-emerald-600 font-extrabold text-sm px-3 py-1 rounded-xl border border-emerald-100">
-                                                    ⭐ {item.score} ball
-                                                </span>
-                                            )}
+                                            <div className="flex flex-col items-end gap-1.5 shrink-0">
+                                                {item.level && (
+                                                    <span className="bg-purple-50 text-purple-600 font-extrabold text-sm px-3 py-1 rounded-xl border border-purple-100 whitespace-nowrap">
+                                                        Daraja: {item.level}
+                                                    </span>
+                                                )}
+                                                {item.score && (
+                                                    <span className="bg-emerald-50 text-emerald-600 font-extrabold text-sm px-3 py-1 rounded-xl border border-emerald-100 whitespace-nowrap">
+                                                        ⭐ {item.score} ball
+                                                    </span>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                     <div className="flex items-center justify-between text-sm text-gray-500 mt-4 pt-4 border-t border-gray-50">
