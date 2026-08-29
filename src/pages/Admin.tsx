@@ -67,6 +67,7 @@ export default function Admin() {
     const [resType, setResType] = useState<"DTM" | "MS">("DTM");
     const [resScore, setResScore] = useState("");
     const [resLevel, setResLevel] = useState("");
+    const [resUniversity, setResUniversity] = useState("");
     const [resDate, setResDate] = useState("");
     const [resImageFile, setResImageFile] = useState<File | null>(null);
     const [isUploadingRes, setIsUploadingRes] = useState(false);
@@ -105,7 +106,6 @@ export default function Admin() {
         e.preventDefault();
         if (!teacherForm.name) return;
         setIsUploading(true);
-
         let imageUrl = teacherForm.existingImage;
         if (imageFile) {
             const fileName = `${Date.now()}.${imageFile.name.split('.').pop()}`;
@@ -113,15 +113,9 @@ export default function Admin() {
             if (uploadError) { alert("Rasm yuklashda xatolik: " + uploadError.message); setIsUploading(false); return; }
             imageUrl = supabase.storage.from("teachers").getPublicUrl(fileName).data.publicUrl;
         }
-
         const payload = { name: teacherForm.name, subject: teacherForm.subject, role: teacherForm.role, image: imageUrl };
-
-        if (editingId) {
-            await supabase.from("teachers").update(payload).eq("id", editingId);
-        } else {
-            await supabase.from("teachers").insert([{ ...payload, sort_order: teachers.length }]);
-        }
-
+        if (editingId) await supabase.from("teachers").update(payload).eq("id", editingId);
+        else await supabase.from("teachers").insert([{ ...payload, sort_order: teachers.length }]);
         cancelEdit();
         fetchAllData();
         setIsUploading(false);
@@ -132,10 +126,8 @@ export default function Admin() {
         if (!courseForm.title) return;
         const generatedTag = courseForm.title.split(" ")[0];
         const payload = { ...courseForm, tag: generatedTag, features: courseFeatures };
-
         if (editingId) await supabase.from("courses").update(payload).eq("id", editingId);
         else await supabase.from("courses").insert([payload]);
-
         cancelEdit();
         fetchAllData();
     };
@@ -145,10 +137,8 @@ export default function Admin() {
     const handleAdvantageSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!advForm.title) return;
-
         if (editingId) await supabase.from("advantages").update(advForm).eq("id", editingId);
         else await supabase.from("advantages").insert([advForm]);
-
         cancelEdit();
         fetchAllData();
     };
@@ -157,6 +147,14 @@ export default function Admin() {
         e.preventDefault();
         if (!resImageFile || !resName || !resDate || !resScore) {
             alert("Iltimos, barcha majburiy maydonlarni to'ldiring!");
+            return;
+        }
+        if (resType === "DTM" && !resUniversity) {
+            alert("DTM uchun oliygoh nomini kiriting!");
+            return;
+        }
+        if (resType === "MS" && !resLevel) {
+            alert("Sertifikat darajasini (masalan: A+) kiriting!");
             return;
         }
 
@@ -176,15 +174,16 @@ export default function Admin() {
                 student_name: resName,
                 exam_type: resType,
                 score: resScore,
-                level: resLevel,
+                level: resType === "MS" ? resLevel : null,
+                university: resType === "DTM" ? resUniversity : null,
                 date_received: resDate,
                 image_url: imageUrl,
             }]);
 
             if (insertError) throw insertError;
 
-            alert("Sertifikat muvaffaqiyatli qo'shildi! 🎉");
-            setResName(""); setResScore(""); setResLevel(""); setResDate(""); setResImageFile(null);
+            alert("Natija muvaffaqiyatli qo'shildi! 🎉");
+            setResName(""); setResScore(""); setResLevel(""); setResUniversity(""); setResDate(""); setResImageFile(null);
 
             const fileInput = document.getElementById('res-file-upload') as HTMLInputElement;
             if (fileInput) fileInput.value = '';
@@ -224,10 +223,7 @@ export default function Admin() {
             const newIndex = teachers.findIndex(t => t.id === over.id);
             const newOrder = arrayMove(teachers, oldIndex, newIndex);
             setTeachers(newOrder);
-
-            await Promise.all(newOrder.map((t, index) =>
-                supabase.from("teachers").update({ sort_order: index }).eq("id", t.id)
-            ));
+            await Promise.all(newOrder.map((t, index) => supabase.from("teachers").update({ sort_order: index }).eq("id", t.id)));
         }
     };
 
@@ -359,19 +355,24 @@ export default function Admin() {
                                 <form onSubmit={handleResultSubmit} className="space-y-4">
                                     <input type="text" value={resName} onChange={(e) => setResName(e.target.value)} placeholder="O'quvchining F.I.O." required className="w-full rounded-xl border p-2.5 text-sm" />
 
-                                    <div className="grid grid-cols-3 gap-2">
+                                    <div className="grid grid-cols-2 gap-2">
                                         <select value={resType} onChange={(e) => setResType(e.target.value as "DTM" | "MS")} className="w-full rounded-xl border p-2.5 text-sm bg-white">
-                                            <option value="DTM">DTM</option>
+                                            <option value="DTM">DTM Imtihoni</option>
                                             <option value="MS">Milliy Sertifikat</option>
                                         </select>
-                                        <input type="text" value={resScore} onChange={(e) => setResScore(e.target.value)} placeholder="Ball (mas: 98.2)" required className="w-full rounded-xl border p-2.5 text-sm" />
-                                        <input type="text" value={resLevel} onChange={(e) => setResLevel(e.target.value)} placeholder="Daraja (mas: A+)" className="w-full rounded-xl border p-2.5 text-sm" />
+                                        <input type="text" value={resScore} onChange={(e) => setResScore(e.target.value)} placeholder="Ball (mas: 189 yoki 100%)" required className="w-full rounded-xl border p-2.5 text-sm" />
                                     </div>
+
+                                    {resType === "MS" ? (
+                                        <input type="text" value={resLevel} onChange={(e) => setResLevel(e.target.value)} placeholder="Daraja (mas: A+, A, B)" required className="w-full rounded-xl border p-2.5 text-sm" />
+                                    ) : (
+                                        <input type="text" value={resUniversity} onChange={(e) => setResUniversity(e.target.value)} placeholder="Oliygoh nomi (mas: TMA)" required className="w-full rounded-xl border p-2.5 text-sm" />
+                                    )}
 
                                     <input type="date" value={resDate} onChange={(e) => setResDate(e.target.value)} required className="w-full rounded-xl border p-2.5 text-sm" />
 
                                     <div>
-                                        <label className="mb-1 block text-xs font-semibold text-ink-500">Sertifikat Rasmi</label>
+                                        <label className="mb-1 block text-xs font-semibold text-ink-500">Natija Rasmi / Sertifikat</label>
                                         <input id="res-file-upload" type="file" accept="image/*" onChange={(e) => setResImageFile(e.target.files?.[0] || null)} required className="w-full rounded-xl border p-2 text-sm file:mr-4 file:rounded-lg file:border-0 file:bg-brand-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-brand-700 cursor-pointer" />
                                     </div>
 
@@ -424,11 +425,12 @@ export default function Admin() {
                                         <div>
                                             <p className="font-bold">
                                                 {r.student_name}
-                                                <span className="text-xs font-semibold bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded ml-2">{r.score} ball</span>
-                                                {r.level && <span className="text-xs font-semibold bg-purple-50 text-purple-600 px-2 py-0.5 rounded ml-2">{r.level}</span>}
+                                                <span className="text-xs font-semibold bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded ml-2">{r.score}</span>
                                             </p>
-                                            <p className="text-xs font-medium text-gray-500">
-                                                <span className="text-brand-600">{r.exam_type}</span> &bull; {new Date(r.date_received).toLocaleDateString("uz-UZ")}
+                                            <p className="text-xs font-medium text-gray-500 mt-1">
+                                                <span className="text-brand-600 font-bold">{r.exam_type}</span>
+                                                {r.level && ` • ${r.level} daraja`}
+                                                {r.university && ` • 🏛️ ${r.university}`}
                                             </p>
                                         </div>
                                     </div>
@@ -437,11 +439,9 @@ export default function Admin() {
                                     </button>
                                 </div>
                             ))}
-
                             {activeTab === "results" && results.length === 0 && (
                                 <p className="text-center text-ink-500 py-10 text-sm">Hozircha natijalar yo'q.</p>
                             )}
-
                         </div>
                     </div>
                 </div>
