@@ -15,7 +15,7 @@ interface ResultItem {
 }
 
 export default function Results() {
-    const [activeTab, setActiveTab] = useState<"DTM" | "MS">("DTM");
+    const [activeTab, setActiveTab] = useState<"DTM" | "MS">("MS");
     const [results, setResults] = useState<ResultItem[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
 
@@ -61,11 +61,11 @@ export default function Results() {
 
                 <div className="flex justify-center mb-12">
                     <div className="bg-gray-200/50 p-1.5 rounded-2xl inline-flex space-x-1 shadow-inner backdrop-blur-sm">
-                        <button onClick={() => setActiveTab("DTM")} className={`px-8 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 ${activeTab === "DTM" ? "bg-white text-blue-600 shadow-sm ring-1 ring-black/5" : "text-gray-500 hover:text-gray-700"}`}>
-                            DTM Natijalari
-                        </button>
                         <button onClick={() => setActiveTab("MS")} className={`px-8 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 ${activeTab === "MS" ? "bg-white text-blue-600 shadow-sm ring-1 ring-black/5" : "text-gray-500 hover:text-gray-700"}`}>
                             Milliy Sertifikat (MS)
+                        </button>
+                        <button onClick={() => setActiveTab("DTM")} className={`px-8 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 ${activeTab === "DTM" ? "bg-white text-blue-600 shadow-sm ring-1 ring-black/5" : "text-gray-500 hover:text-gray-700"}`}>
+                            DTM Natijalari
                         </button>
                     </div>
                 </div>
